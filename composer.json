@@ -1,0 +1,25 @@
+{
+    "name": "phacil/http",
+    "description": "Phacil PHP Framework HTTP Classes",
+    "license": "MIT",
+    "keywords": ["php", "framework", "phacil", "http"],
+    "authors": [
+        {
+            "name": "Alisson Nascimento",
+            "email": "alisson.sa.nascimento@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "symfony/http-foundation": "^3.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.0.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phacil\\Component\\HTTP\\": "src/"	
+        },
+		"files": ["src/functions.inc.php"]
+    }
+}
