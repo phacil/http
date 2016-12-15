@@ -3,40 +3,46 @@
 namespace Phacil\Component\HTTP;
 
 class Request {
-    private static $module = null;
-    private static $controller = null;
-    private static $action = null;
-    private static $params = [];
-        
+    
     private static $method = 'get';
     private static $url = null;
     private static $uri = null;
+    
     private static $prefix = null;
+    private static $module = null;
+    private static $controller = null;
+    private static $action = null;
+    private static $params = [];    
+    
+    
     private static $args = [];
-    private static $get = [];
-    
+    private static $get = [];    
     private static $data = [];
-    
-    private $request = array('url'=>'',
-                             'prefix'=>'',
-                             'module'=>'',
-                             'controller'=>'',
-                             'action'=>'',
-                             'params'=>array(),
-                             'args'=>array() );
-    
+        
     static function init(){
         Server::init($_SERVER);
-        self::setMethod(Server::get('REQUEST_METHOD'));        
+        self::setMethod(Server::get('REQUEST_METHOD'));
         self::__parseUri();
         self::escapePostFilesGetData();
         //self::__diffUrl();
     }
     
-    private static function __parseUri(){       
+    private function __extractArgs($path){
+        $parts = explode('/', $path);
+        $new_parts = $args = [];
+        foreach ($parts as $part) {
+            if(strpos($part, '=')){
+                list($k, $v) = explode('=', $part);
+                $args[$k] = $v;
+            }
+        }        
+        return $args;
+    }
+    
+    private static function __parseUri(){
         
         if(Server::get('REDIRECT_QUERY_STRING')!=null){
-            self::setUri(Server::get('REDIRECT_QUERY_STRING'));
+            self::setUrl(Server::get('REDIRECT_QUERY_STRING'));
             $pos = strpos(Server::get('REDIRECT_QUERY_STRING'), '&');
             
             if($pos !== false){
@@ -46,7 +52,7 @@ class Request {
             }
                         
         }else if(Server::get('REQUEST_URI') != null){
-            self::setUri(Server::get('REQUEST_URI'));
+            self::setUrl(Server::get('REQUEST_URI'));
             $pos = strpos(Server::get('REQUEST_URI'), '?');
             
             if($pos !== false){
@@ -62,8 +68,9 @@ class Request {
         $path = ($path != '/' && !empty($path))
                 ?rtrim($path, '/')
                 :'/';
-        
-        self::setUrl($path);
+
+        self::setArgs(self::__extractArgs($path));        
+        self::setUri($path);
         return $path;
 
     }
@@ -182,21 +189,32 @@ class Request {
         self::$uri = $uri;
     }
     
+    public static function suppressArgs($path){
+        $parts = explode('/', $path);
+        $new_parts = $args = [];
+        foreach ($parts as $part) {
+            if(!strpos($part, '=')){                
+               $new_parts[] = $part;
+            }
+        }
+        return join('/',$new_parts);
+    }
+    
     public static function info($key = null){
         if(!$key){
             return array(
+                'method' => self::$method,
+                'url' => self::$url,
+                'uri' => self::$uri,    
+                
+                'prefix' => self::$prefix,
                 'module' => self::$module,
                 'controller' => self::$controller,
                 'action' => self::$action,
                 'params' => self::$params,
-
-                'method' => self::$method,
-                'url' => self::$url,
-                'uri' => self::$uri,
-                'prefix' => self::$prefix,
+                
                 'args' => self::$args,
                 'get' => self::$get,
-
                 'data' => self::$data,
             );
         }else if(isset(self::${$key})){
