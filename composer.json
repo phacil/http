@@ -18,8 +18,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Phacil\\Component\\HTTP\\": "src/"	
+            "Phacil\\HTTP\\": "src/"	
         },
-		"files": ["src/functions.inc.php"]
+        "files": ["src/functions.inc.php"]
     }
 }

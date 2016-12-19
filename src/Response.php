@@ -1,6 +1,6 @@
 <?php
 
-namespace Phacil\Component\HTTP;
+namespace Phacil\HTTP;
 
 class Response extends \Symfony\Component\HttpFoundation\Response{
     
