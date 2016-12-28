@@ -51,7 +51,7 @@ class Session{
         $_SESSION = [];
     }
 
-    static protected function preventHijacking(){
+    protected static function preventHijacking(){
             if(!(self::get('_config.IPaddress')) || !(self::get('_config.userAgent'))){
                     return false;
             }
@@ -72,7 +72,7 @@ class Session{
             }*/
     }
 
-    public static function regenerateSession(){
+    protected static function regenerateSession(){
 
             // If this session is obsolete it means there already is a new id
 //            if(isset($_SESSION['OBSOLETE']) || $_SESSION['OBSOLETE'] == true)
@@ -136,6 +136,34 @@ class Session{
             $session =& $session[$next];
         }
         $session[array_shift($parsed)] = $value;
+    }
+    
+    public static function check($name){
+        return is_null(self::get($name))?false:true;
+    }
+    
+    public static function delete($name) {
+        $parsed = explode('.', $name);
+        $session =& $_SESSION;
+        while (count($parsed) > 1) {
+            $next = array_shift($parsed);
+            if ( ! isset($session[$next]) || ! is_array($session[$next])) {
+                $session[$next] = [];
+            }
+            $session =& $session[$next];
+        }
+        unset($session[array_shift($parsed)]);
+    }
+    
+    public static function setMessage($msg, $id = '', $class = 'alert', $div = 'div'){
+        $divHtml = "<$div id='$id' class='$class'>$msg</$div>";
+        self::set('message'.$id, $divHtml);
+    }
+    
+    public static function showMessage($id = ''){
+        $msg = self::get('message'.$id);
+        self::delete('message'.$id);
+        return $msg;
     }
 	
 }
