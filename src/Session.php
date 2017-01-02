@@ -154,16 +154,5 @@ class Session{
         }
         unset($session[array_shift($parsed)]);
     }
-    
-    public static function setMessage($msg, $id = '', $class = 'alert', $div = 'div'){
-        $divHtml = "<$div id='$id' class='$class'>$msg</$div>";
-        self::set('message'.$id, $divHtml);
-    }
-    
-    public static function showMessage($id = ''){
-        $msg = self::get('message'.$id);
-        self::delete('message'.$id);
-        return $msg;
-    }
-	
+    	
 }
