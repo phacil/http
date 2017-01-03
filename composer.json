@@ -20,6 +20,9 @@
         "psr-4": {
             "Phacil\\HTTP\\": "src/"	
         },
-        "files": ["src/functions.inc.php"]
+        "files": [
+            "src/functions.inc.php",
+            "src/helpers.inc.php"
+        ]
     }
 }

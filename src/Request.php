@@ -14,17 +14,15 @@ class Request {
     private static $action = null;
     private static $params = [];    
     
-    
     private static $args = [];
     private static $get = [];    
     private static $data = [];
         
     static function init(){
         Server::init($_SERVER);
-        self::setMethod(Server::get('REQUEST_METHOD'));
+        self::setMethod(server()->get('REQUEST_METHOD'));
         self::__parseUri();
         self::escapePostFilesGetData();
-        //self::__diffUrl();
     }
     
     private function __extractArgs($path){
@@ -41,24 +39,24 @@ class Request {
     
     private static function __parseUri(){
         
-        if(Server::get('REDIRECT_QUERY_STRING')!=null){
-            self::setUrl(Server::get('REDIRECT_QUERY_STRING'));
-            $pos = strpos(Server::get('REDIRECT_QUERY_STRING'), '&');
+        if(server()->get('REDIRECT_QUERY_STRING')!=null){
+            self::setUrl(server()->get('REDIRECT_QUERY_STRING'));
+            $pos = strpos(server()->get('REDIRECT_QUERY_STRING'), '&');
             
             if($pos !== false){
-                $path = str_replace(substr(Server::get('REDIRECT_QUERY_STRING'), $pos), '',Server::get('REDIRECT_QUERY_STRING'));
+                $path = str_replace(substr(server()->get('REDIRECT_QUERY_STRING'), $pos), '',server()->get('REDIRECT_QUERY_STRING'));
             }else{
-                $path = Server::get('REDIRECT_QUERY_STRING');
+                $path = server()->get('REDIRECT_QUERY_STRING');
             }
                         
-        }else if(Server::get('REQUEST_URI') != null){
-            self::setUrl(Server::get('REQUEST_URI'));
-            $pos = strpos(Server::get('REQUEST_URI'), '?');
+        }else if(server()->get('REQUEST_URI') != null){
+            self::setUrl(server()->get('REQUEST_URI'));
+            $pos = strpos(server()->get('REQUEST_URI'), '?');
             
             if($pos !== false){
-                $path = str_replace(substr(Server::get('REQUEST_URI'), $pos), '',Server::get('REQUEST_URI'));
+                $path = str_replace(substr(server()->get('REQUEST_URI'), $pos), '',server()->get('REQUEST_URI'));
             }else{
-                $path = Server::get('REQUEST_URI');
+                $path = server()->get('REQUEST_URI');
             }                
             
         }else{
