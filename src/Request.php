@@ -4,6 +4,8 @@ namespace Phacil\HTTP;
 
 class Request {
     
+    use InstanceTrait;
+    
     private static $method = 'get';
     private static $url = null;
     private static $uri = null;
@@ -17,12 +19,17 @@ class Request {
     private static $args = [];
     private static $get = [];    
     private static $data = [];
+    
+    public function __construct() {
+        $this->init();
+        self::$instance = $this;
+        return $this;
+    }
         
-    static function init(){
-        Server::init($_SERVER);
+    public static function init(){        
         self::setMethod(server()->get('REQUEST_METHOD'));
         self::__parseUri();
-        self::escapePostFilesGetData();
+        self::escapePostFilesGetData();        
     }
     
     private function __extractArgs($path){
@@ -99,91 +106,91 @@ class Request {
         }
     }
     
-    static function getModule() {
+    public static function getModule() {
         return self::$module;
     }
 
-    static function getController() {
+    public static function getController() {
         return self::$controller;
     }
 
-    static function getAction() {
+    public static function getAction() {
         return self::$action;
     }
 
-    static function getParams() {
+    public static function getParams() {
         return self::$params;
     }
 
-    static function getMethod() {
+    public static function getMethod() {
         return self::$method;
     }
 
-    static function getUrl() {
+    public static function getUrl() {
         return self::$url;
     }
 
-    static function getPrefix() {
+    public static function getPrefix() {
         return self::$prefix;
     }
 
-    static function getArgs() {
+    public static function getArgs() {
         return self::$args;
     }
 
-    static function getData() {
+    public static function getData() {
         return self::$data;
     }
     
-    static function getGet() {
+    public static function getGet() {
         return self::$get;
     }
     
-    static function getUri() {
+    public static function getUri() {
         return self::$uri;
     }
 
-    static function setModule($module) {
+    public static function setModule($module) {
         self::$module = $module;
     }
 
-    static function setController($controller) {
+    public static function setController($controller) {
         self::$controller = $controller;
     }
 
-    static function setAction($action) {
+    public static function setAction($action) {
         self::$action = $action;
     }
 
-    static function setParams($params) {
+    public static function setParams($params) {
         self::$params = $params;
     }
 
-    static function setMethod($method) {
+    public static function setMethod($method) {
         self::$method = $method;
     }
 
-    static function setUrl($url) {
+    public static function setUrl($url) {
         self::$url = $url;
     }
 
-    static function setPrefix($prefix) {
+    public static function setPrefix($prefix) {
         self::$prefix = $prefix;
     }
 
-    static function setArgs($args) {
+    public static function setArgs($args) {
         self::$args = $args;
     }
 
-    static function setData($data) {
+    public static function setData($data) {
         self::$data = is_array($data)?$data:(array)$data;
     }
     
-    static function setGet($get) {
+    public static function setGet($get) {
         self::$get = $get;
     }
     
-    static function setUri($uri) {
+    public static function setUri($uri) {
         self::$uri = $uri;
     }
     

@@ -4,8 +4,16 @@ namespace Phacil\HTTP;
 
 class Server {
     
+    use InstanceTrait;
+    
     protected static $collection = [];
 
+    public function __construct() {
+        $this->init($_SERVER);
+        self::$instance = $this;
+        return $this;
+    }
+    
     public static function init($serverArray = [])
     {
         foreach($serverArray as $k => $item){
@@ -13,8 +21,12 @@ class Server {
             $_SERVER[$k] = null;
         }
     }
+            
+    public static function getCollection() {
+        return self::$collection;
+    }
     
-    public function get($key) 
+    public static function get($key) 
     {
         if(isset(self::$collection[$key]))
         {
@@ -23,11 +35,8 @@ class Server {
         return false;
     }
     
-    public function getAll() {
+    public static function getAll() {
         return self::getCollection();
     }
     
-    public static function getCollection() {
-        return self::$collection;
-    }
 }
