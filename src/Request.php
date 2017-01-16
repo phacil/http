@@ -27,7 +27,7 @@ class Request {
     }
         
     public static function init(){        
-        self::setMethod(server()->get('REQUEST_METHOD'));
+        self::method(server()->get('REQUEST_METHOD'));
         self::__parseUri();
         self::escapePostFilesGetData();        
     }
@@ -47,7 +47,7 @@ class Request {
     private static function __parseUri(){
         
         if(server()->get('REDIRECT_QUERY_STRING')!=null){
-            self::setUrl(server()->get('REDIRECT_QUERY_STRING'));
+            self::url(server()->get('REDIRECT_QUERY_STRING'));
             $pos = strpos(server()->get('REDIRECT_QUERY_STRING'), '&');
             
             if($pos !== false){
@@ -57,7 +57,7 @@ class Request {
             }
                         
         }else if(server()->get('REQUEST_URI') != null){
-            self::setUrl(server()->get('REQUEST_URI'));
+            self::url(server()->get('REQUEST_URI'));
             $pos = strpos(server()->get('REQUEST_URI'), '?');
             
             if($pos !== false){
@@ -74,8 +74,8 @@ class Request {
                 ?rtrim($path, '/')
                 :'/';
 
-        self::setArgs(self::__extractArgs($path));        
-        self::setUri($path);
+        self::args(self::__extractArgs($path));
+        self::uri($path);
         return $path;
 
     }
@@ -87,8 +87,8 @@ class Request {
             $_FILES = stripSlashesDeep($_FILES);
             $_GET = stripSlashesDeep($_GET);
         }
-        self::setData(array_merge(self::getData(), $_POST));
-        self::setData(array_merge(self::getData(), $_FILES));
+        self::data(array_merge(self::data(), $_POST));
+        self::data(array_merge(self::data(), $_FILES));
         
         $get = [];
         
@@ -97,100 +97,89 @@ class Request {
             $get[$k] = $val;
         }
         
-        self::setGet($get);
+        self::get($get);
 
         $_POST = $_FILES = $_GET = [];
         
-        if(isset(self::getData()['_method'])){
-            self::setMethod(self::getData()['_method']);
+        if(isset(self::data()['_method'])){
+            self::method(self::data()['_method']);
         }
     }
     
-    public static function getModule() {
-        return self::$module;
-    }
-
-    public static function getController() {
-        return self::$controller;
-    }
-
-    public static function getAction() {
-        return self::$action;
-    }
-
-    public static function getParams() {
-        return self::$params;
-    }
-
-    public static function getMethod() {
-        return self::$method;
-    }
-
-    public static function getUrl() {
-        return self::$url;
-    }
-
-    public static function getPrefix() {
-        return self::$prefix;
-    }
-
-    public static function getArgs() {
-        return self::$args;
-    }
-
-    public static function getData() {
-        return self::$data;
-    }
-    
-    public static function getGet() {
-        return self::$get;
-    }
-    
-    public static function getUri() {
-        return self::$uri;
-    }
-
-    public static function setModule($module) {
+    public static function module($module = false) {
+        if($module === false){
+            return self::$module;
+        }
         self::$module = $module;
     }
 
-    public static function setController($controller) {
+    public static function controller($controller = false) {
+        if($controller === false){
+            return self::$controller;
+        }
         self::$controller = $controller;
     }
 
-    public static function setAction($action) {
+    public static function action($action = false) {
+        if($action === false){
+            return self::$action;
+        }
         self::$action = $action;
     }
 
-    public static function setParams($params) {
+    public static function params($params = false) {
+        if($params === false){
+            return self::$params;
+        }
         self::$params = $params;
     }
 
-    public static function setMethod($method) {
+    public static function method($method = false) {
+        if($method === false){
+            return self::$method;
+        }
         self::$method = $method;
     }
 
-    public static function setUrl($url) {
+    public static function url($url = false) {
+        if($url === false){
+            return self::$url;
+        }
         self::$url = $url;
     }
 
-    public static function setPrefix($prefix) {
+    public static function prefix($prefix = false) {
+        if($prefix === false){
+            return self::$prefix;
+        }
         self::$prefix = $prefix;
     }
 
-    public static function setArgs($args) {
+    public static function args($args = false) {
+        if($args === false){
+            return self::$args;
+        }
         self::$args = $args;
     }
 
-    public static function setData($data) {
+    public static function data($data = false) {
+        if($data === false){
+            return self::$data;
+        }
         self::$data = is_array($data)?$data:(array)$data;
     }
     
-    public static function setGet($get) {
+    public static function get($get = false) {
+        if($get === false){
+            return self::$get;
+        }
         self::$get = $get;
     }
     
-    public static function setUri($uri) {
+    public static function uri($uri = false) {
+        if($uri === false){
+            return self::$uri;
+        }
         self::$uri = $uri;
     }
     
