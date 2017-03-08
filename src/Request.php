@@ -46,14 +46,18 @@ class Request {
     
     private static function __parseUri(){
         
-        if(server()->get('REDIRECT_QUERY_STRING')!=null){
-            self::url(server()->get('REDIRECT_QUERY_STRING'));
-            $pos = strpos(server()->get('REDIRECT_QUERY_STRING'), '&');
+        $request = !is_null(server()->get('REDIRECT_QUERY_STRING'))
+                ?server()->get('REDIRECT_QUERY_STRING')
+                :server()->get('QUERY_STRING');
+        
+        if($request!=null){
+            self::url($request);
+            $pos = strpos($request, '&');
             
             if($pos !== false){
-                $path = str_replace(substr(server()->get('REDIRECT_QUERY_STRING'), $pos), '',server()->get('REDIRECT_QUERY_STRING'));
+                $path = str_replace(substr($request, $pos), '',$request);
             }else{
-                $path = server()->get('REDIRECT_QUERY_STRING');
+                $path = $request;
             }
                         
         }else if(server()->get('REQUEST_URI') != null){
