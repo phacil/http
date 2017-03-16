@@ -233,4 +233,13 @@ class Request {
         }
         return false;        
     }
+    
+    
+    public static function isAjax(){
+        if(!empty(server()->get('HTTP_X_REQUESTED_WITH')) && strtolower(server()->get('HTTP_X_REQUESTED_WITH')) == 'xmlhttprequest')
+        {    
+          return true;    
+        }
+        return false;
+    }
 }
