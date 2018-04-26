@@ -9,9 +9,16 @@
             "email": "alisson.sa.nascimento@gmail.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "https://github.com/phacil/common.git"
+        }
+    ],
     "require": {
         "php": ">=5.4",
-        "symfony/http-foundation": "^3.2"
+        "symfony/http-foundation": "^3.2",
+        "phacil/common": "dev-development"
     },
     "require-dev": {
         "phpunit/phpunit": "4.0.*"
@@ -21,7 +28,6 @@
             "Phacil\\HTTP\\": "src/"	
         },
         "files": [
-            "src/functions.inc.php",
             "src/helpers.inc.php"
         ]
     }
