@@ -1,13 +1,17 @@
 <?php
 
 namespace Phacil\HTTP;
+use Phacil\Common\AbstractClass\AbstractCollection;
 
-class Session{
+class Session extends AbstractCollection{
     
-    use InstanceTrait;
+    use \Phacil\Common\Traits\InstanceTrait;
+    
+    protected $type = self::TYPE_MIXED;
     
     public function __construct() {
         self::$instance = $this;
+        parent::__construct($_SESSION);
         return $this;
     }
 	
@@ -17,7 +21,7 @@ class Session{
         ini_set('session.cookie_httponly', 1);
         
         if(!$name){
-            $name = md5(Server::get('REMOTE_ADRESS') . Server::get('HTTP_USER_AGENT'));
+            $name = md5(server()->get('REMOTE_ADRESS') . server()->get('HTTP_USER_AGENT'));
         }else{
             $name = md5($name);
         }
@@ -25,7 +29,7 @@ class Session{
         session_name($name . '_Session');
 
         // Set SSL level
-        $https = isset($secure) ? $secure : isset($_SERVER['HTTPS']);
+        $https = isset($secure) ? $secure : is_null(server()->check('HTTPS'));
 
         // Set session cookie options
         session_set_cookie_params($limit, $path, $domain, $https, true);
@@ -38,9 +42,9 @@ class Session{
             if(!self::preventHijacking())
             {
                     // Reset session data and regenerate id
-                    self::clean();
-                    self::set('_config.IPaddress', Server::get('REMOTE_ADDR'));
-                    self::set('_config.userAgent', Server::get('HTTP_USER_AGENT'));
+                    session()->clean();
+                    session()->set('_config.IPaddress', server()->get('REMOTE_ADDR'));
+                    session()->set('_config.userAgent', server()->get('HTTP_USER_AGENT'));
 
                     self::regenerateSession();
 
@@ -49,28 +53,29 @@ class Session{
                     self::regenerateSession();
             }
         }else{
-            $_SESSION = array();
-            session_destroy();
-            session_start();
+            $this->clean();
         }
     }
     
-    private static function clean()
+    protected function clean()
     {
         $_SESSION = [];
+        session_destroy();
+        session_start();
+        parent::clean();
     }
 
-    protected static function preventHijacking()
+    private static function preventHijacking()
     {
-        if(!(self::get('_config.IPaddress')) || !(self::get('_config.userAgent'))){
+        if(!(session()->check('_config.IPaddress')) || !(session()->check('_config.userAgent'))){
             return false;
         }
 
-        if (self::get('_config.IPaddress') != Server::get('REMOTE_ADDR')){
+        if (session()->check('_config.IPaddress') != server()->check('REMOTE_ADDR')){
             return false;
         }
 
-        if( self::get('_config.userAgent') != Server::get('HTTP_USER_AGENT')){
+        if( session()->check('_config.userAgent') != server()->check('HTTP_USER_AGENT')){
             return false;
         }
             
@@ -79,20 +84,20 @@ class Session{
         /*if(!self::preventHijacking())
             {
                     $_SESSION = array();
-                    self::get('_config.IPaddress') = Server::get('REMOTE_ADDR');
-                    self::get('_config.userAgent') = Server::get('HTTP_USER_AGENT');
+                    session()->get('_config.IPaddress') = server()->get('REMOTE_ADDR');
+                    session()->get('_config.userAgent') = server()->get('HTTP_USER_AGENT');
             }*/
     }
 
-    protected static function regenerateSession()
+    private static function regenerateSession()
     {
         // If this session is obsolete it means there already is a new id
-//            if(isset($_SESSION['OBSOLETE']) || $_SESSION['OBSOLETE'] == true)
+//            if(session()->check['OBSOLETE']) || $_SESSION['OBSOLETE'] == true)
 //                    return;
 
         // Set current session to expire in 10 seconds
-        $_SESSION['OBSOLETE'] = true;
-        $_SESSION['EXPIRES'] = time() + 10;
+        session()->set('OBSOLETE' ,true);
+        session()->set('EXPIRES', time() + 10);
 
         // Create new session without destroying the old one
         session_regenerate_id(false);
@@ -106,67 +111,42 @@ class Session{
         session_start();
 
         // Now we unset the obsolete and expiration values for the session we want to keep
-        unset($_SESSION['OBSOLETE']);
-        unset($_SESSION['EXPIRES']);
+        session()->delete('OBSOLETE');
+        session()->set('EXPIRES');
     }
 
-    protected static function validateSession()
+    private function validateSession()
     {
-        if( isset($_SESSION['OBSOLETE']) && !isset($_SESSION['EXPIRES']) )
+        if( session()->check('OBSOLETE') && !session()->check('EXPIRES') )
                 return false;
 
-        if(isset($_SESSION['EXPIRES']) && $_SESSION['EXPIRES'] < time())
+        if(session()->check('EXPIRES') && session()->get('EXPIRES') < time())
                 return false;
 
         return true;
     }
 	
-    public static function get($name)
+    public function get($key)
     {
-        $parsed = explode('.', $name);
-        $result = $_SESSION;
-        while ($parsed) {
-            $next = array_shift($parsed);
-            if (isset($result[$next])) {
-                $result = $result[$next];
-            } else {
-                return null;
-            }
-        }
-        return $result;
+        return parent::get($key);
     }
 	
-    public static function set($name, $value)
+    public function set($key, $value = null)
     {
-        $parsed = explode('.', $name);
-        $session =& $_SESSION;
-        while (count($parsed) > 1) {
-            $next = array_shift($parsed);
-            if ( ! isset($session[$next]) || ! is_array($session[$next])) {
-                $session[$next] = [];
-            }
-            $session =& $session[$next];
-        }
-        $session[array_shift($parsed)] = $value;
+        parent::set($key, $value);
+        $_SESSION = $this->elements;
+        return $this;
     }
     
-    public static function check($name)
+    public function check($key)
     {
-        return is_null(self::get($name))?false:true;
+        return parent::check($key);
     }
     
-    public static function delete($name)
-    {
-        $parsed = explode('.', $name);
-        $session =& $_SESSION;
-        while (count($parsed) > 1) {
-            $next = array_shift($parsed);
-            if ( ! isset($session[$next]) || ! is_array($session[$next])) {
-                $session[$next] = [];
-            }
-            $session =& $session[$next];
-        }
-        unset($session[array_shift($parsed)]);
+    public function delete($key)
+    {        
+        parent::delete($key);
+        $_SESSION = $this->elements;
     }
     	
 }

@@ -4,7 +4,7 @@ namespace Phacil\HTTP;
 
 class Request {
 
-    use InstanceTrait;
+    use \Phacil\Common\Traits\InstanceTrait;
 
     private static $method = 'get';
     private static $url = null;
@@ -16,7 +16,7 @@ class Request {
     private static $params = [];
     private static $args = [];
     private static $get = [];
-    private static $data = [];
+    private static $post = [];
 
     public function __construct()
     {
@@ -48,7 +48,7 @@ class Request {
     private static function __parseUri()
     {
 
-        $request = !is_null(server()->get('REDIRECT_QUERY_STRING')) ? server()->get('REDIRECT_QUERY_STRING') : server()->get('QUERY_STRING');
+        $request = (server()->Check('REDIRECT_QUERY_STRING')) ? server()->get('REDIRECT_QUERY_STRING') : server()->get('QUERY_STRING');
 
         if ($request != null) {
             self::url($request);
@@ -87,8 +87,8 @@ class Request {
             $_FILES = stripSlashesDeep($_FILES);
             $_GET = stripSlashesDeep($_GET);
         }
-        self::data(array_merge(self::data(), $_POST));
-        self::data(array_merge(self::data(), $_FILES));
+        self::post(array_merge(self::post(), $_POST));
+        self::post(array_merge(self::post(), $_FILES));
 
         $get = [];
 
@@ -103,8 +103,8 @@ class Request {
 
         $_POST = $_FILES = $_GET = [];
 
-        if (isset(self::data()['_method'])) {
-            self::method(self::data()['_method']);
+        if (isset(self::post()['_method'])) {
+            self::method(self::post()['_method']);
         }
     }
 
@@ -172,12 +172,12 @@ class Request {
         self::$args = $args;
     }
 
-    public static function data($data = false)
+    public static function post($post = false)
     {
-        if ($data === false) {
-            return self::$data;
+        if ($post === false) {
+            return self::$post;
         }
-        self::$data = is_array($data) ? $data : (array) $data;
+        self::$post = is_array($post) ? $post : (array) $post;
     }
 
     public static function get($get = false)
@@ -208,7 +208,7 @@ class Request {
         return join('/', $new_parts);
     }
 
-    public static function info($key = null)
+    public static function data($key = null)
     {
         if (!$key) {
             return array(
@@ -222,7 +222,7 @@ class Request {
                 'params' => self::$params,
                 'args' => self::$args,
                 'get' => self::$get,
-                'data' => self::$data,
+                'post' => self::$post,
             );
         } else if (isset(self::${$key})) {
             return self::${$key};

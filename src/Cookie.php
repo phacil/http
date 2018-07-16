@@ -4,7 +4,7 @@ namespace Phacil\HTTP;
 
 class Cookie {
 
-    use InstanceTrait;
+    use \Phacil\Common\Traits\InstanceTrait;
 
     public function __construct()
     {
